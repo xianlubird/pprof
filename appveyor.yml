@@ -11,3 +11,4 @@ build_script:
 
 test_script:
   - go test -v ./...
+  
