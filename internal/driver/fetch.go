@@ -34,6 +34,7 @@ import (
 	"github.com/google/pprof/internal/measurement"
 	"github.com/google/pprof/internal/plugin"
 	"github.com/google/pprof/profile"
+	"log"
 )
 
 // fetchProfiles fetches and symbolizes the profiles specified by s.
@@ -587,9 +588,18 @@ var httpGet = func(source string, timeout time.Duration) (*http.Response, error)
 	}
 
 	var tlsConfig *tls.Config
-	if url.Scheme == "https+insecure" {
+	if url.Scheme == "https" {
+		rootCert := os.Getenv("https_cert")
+		rootKey := os.Getenv("https_key")
+		certs, err := tls.LoadX509KeyPair(rootCert, rootKey)
+		if err != nil {
+			log.Printf("LoadX509KeyPair error %v", err)
+			return nil, err
+		}
+
 		tlsConfig = &tls.Config{
 			InsecureSkipVerify: true,
+			Certificates:  []tls.Certificate{certs},
 		}
 		url.Scheme = "https"
 		source = url.String()
@@ -598,7 +608,6 @@ var httpGet = func(source string, timeout time.Duration) (*http.Response, error)
 	client := &http.Client{
 		Transport: &http.Transport{
 			ResponseHeaderTimeout: timeout + 5*time.Second,
-			Proxy:           http.ProxyFromEnvironment,
 			TLSClientConfig: tlsConfig,
 		},
 	}
