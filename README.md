@@ -7,10 +7,8 @@ pprof is a tool for visualization and analysis of profiling data.
 
 使用https之前，需要通过环境变量指定证书地址
 
-`export https_key=/root/key.pem`
-
-
-`export https_cert=/root/cert.pem`
+    export https_key=/root/key.pem`
+    export https_cert=/root/cert.pem`
 
 pprof reads a collection of profiling samples in profile.proto format and
 generates reports to visualize and help analyze the data. It can generate both
